@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain-Based Certificate Verification System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-title">Certificate Verification System</h1>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="showSection('home')">Home</button>
+                <button class="nav-btn" onclick="showSection('issue')">Issue Certificate</button>
+                <button class="nav-btn" onclick="showSection('verify')">Verify Certificate</button>
+            </div>
+            <div class="wallet-status">
+                <span id="walletStatus">Not Connected</span>
+                <button id="connectWalletBtn" class="connect-btn" onclick="connectWallet()">Connect Wallet</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- Home Section -->
+        <section id="homeSection" class="section active">
+            <div class="hero">
+                <h1>Blockchain-Based Certificate Verification System</h1>
+                <p class="hero-description">
+                    A secure and transparent system for issuing and verifying digital certificates using blockchain technology. 
+                    Each certificate is cryptographically secured on the blockchain, ensuring authenticity and preventing tampering.
+                </p>
+                <div class="hero-buttons">
+                    <button class="hero-btn primary" onclick="showSection('issue')">Issue Certificate</button>
+                    <button class="hero-btn secondary" onclick="showSection('verify')">Verify Certificate</button>
+                </div>
+            </div>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <h3>🔒 Secure</h3>
+                    <p>Certificates are stored on an immutable blockchain, preventing unauthorized modifications.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>✅ Verifiable</h3>
+                    <p>Anyone can verify the authenticity of a certificate using its unique ID or file hash.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌐 Transparent</h3>
+                    <p>All certificate records are publicly accessible on the blockchain for verification.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Issue Certificate Section -->
+        <section id="issueSection" class="section">
+            <div class="card">
+                <h2>Issue New Certificate</h2>
+                <p class="card-description">Fill in the details below to issue a new certificate on the blockchain.</p>
+                
+                <form id="issueForm" onsubmit="handleIssueCertificate(event)">
+                    <div class="form-group">
+                        <label for="studentName">Student Name *</label>
+                        <input type="text" id="studentName" required placeholder="Enter student name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="certificateId">Certificate ID *</label>
+                        <input type="text" id="certificateId" required placeholder="Enter unique certificate ID">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="courseName">Course Name *</label>
+                        <input type="text" id="courseName" required placeholder="Enter course name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="issuingOrganization">Issuing Organization *</label>
+                        <input type="text" id="issuingOrganization" required placeholder="Enter organization name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="certificateFile">Certificate PDF File *</label>
+                        <input type="file" id="certificateFile" accept=".pdf" required>
+                        <p class="file-hint">Only PDF files are supported</p>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="issueBtn">Issue Certificate</button>
+                </form>
+                
+                <div id="issueResult" class="result-container hidden">
+                    <div id="issueSuccess" class="success-message hidden"></div>
+                    <div id="issueError" class="error-message hidden"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Verify Certificate Section -->
+        <section id="verifySection" class="section">
+            <div class="card">
+                <h2>Verify Certificate</h2>
+                <p class="card-description">Verify a certificate using its ID or by uploading the PDF file.</p>
+                
+                <!-- Verification Method Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchVerifyTab('id')">Verify by ID</button>
+                    <button class="tab-btn" onclick="switchVerifyTab('file')">Verify by File</button>
+                </div>
+                
+                <!-- Verify by ID -->
+                <div id="verifyById" class="verify-method active">
+                    <form id="verifyIdForm" onsubmit="handleVerifyById(event)">
+                        <div class="form-group">
+                            <label for="verifyCertificateId">Certificate ID *</label>
+                            <input type="text" id="verifyCertificateId" required placeholder="Enter certificate ID to verify">
+                        </div>
+                        <button type="submit" class="submit-btn">Verify Certificate</button>
+                    </form>
+                    
+                    <div id="verifyIdResult" class="result-container hidden">
+                        <div id="certificateDetails" class="certificate-details hidden"></div>
+                        <div id="verifyIdSuccess" class="success-message hidden"></div>
+                        <div id="verifyIdError" class="error-message hidden"></div>
+                    </div>
+                </div>
+                
+                <!-- Verify by File -->
+                <div id="verifyByFile" class="verify-method hidden">
+                    <form id="verifyFileForm" onsubmit="handleVerifyByFile(event)">
+                        <div class="form-group">
+                            <label for="verifyFileCertificateId">Certificate ID *</label>
+                            <input type="text" id="verifyFileCertificateId" required placeholder="Enter certificate ID">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="verifyCertificateFile">Certificate PDF File *</label>
+                            <input type="file" id="verifyCertificateFile" accept=".pdf" required>
+                            <p class="file-hint">Upload the certificate PDF to verify its integrity</p>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">Verify File</button>
+                    </form>
+                    
+                    <div id="verifyFileResult" class="result-container hidden">
+                        <div id="verifyFileSuccess" class="success-message hidden"></div>
+                        <div id="verifyFileError" class="error-message hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <p id="loadingMessage">Processing...</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Blockchain-Based Certificate Verification System | College Project</p>
+        <p class="footer-note">This system demonstrates blockchain technology for certificate verification. For production use, additional security measures are required.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
